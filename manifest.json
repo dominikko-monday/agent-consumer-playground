@@ -1,0 +1,56 @@
+{
+  "name": "monday-app",
+  "description": "A monday.com app with AI Platform Agent and Webhook Block",
+  "features": [
+    {
+      "type": "AppFeatureAiPlatformAgent",
+      "name": "AI Agent",
+      "data": {
+        "name": "AI Agent",
+        "isMentionable": true,
+        "isAssignable": true,
+        "agentStatus": "active"
+      }
+    },
+    {
+      "type": "AppFeatureAgentWebhookBlock",
+      "name": "Agent Webhook Handler",
+      "data": {
+        "name": "Agent Webhook Handler",
+        "kind": "action",
+        "executionConfig": {
+          "runConfig": {
+            "url": "/api/agent-webhook"
+          }
+        },
+        "inboundFieldsConfig": {
+          "fields": [
+            {
+              "id": 0,
+              "type": "primitive",
+              "isArray": false,
+              "fieldKey": "triggerNodeId",
+              "fieldTitle": "Which trigger fired (node 1 = mentioned, node 2 = assigned)",
+              "isNullable": false,
+              "primitiveType": "number"
+            },
+            {
+              "id": 1,
+              "type": "custom",
+              "isArray": false,
+              "fieldKey": "triggerOutput",
+              "fieldTitle": "Receives nested trigger outputs via dot-notation",
+              "isNullable": false,
+              "allowPrimitiveForm": false,
+              "fieldTypeReferenceId": 11261438
+            }
+          ]
+        },
+        "outboundFieldsConfig": {
+          "fields": []
+        }
+      }
+    }
+  ],
+  "oauthScopes": ["updates:write", "boards:read"]
+}
