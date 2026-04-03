@@ -41,13 +41,6 @@ export async function authenticationMiddleware(
       return;
     }
 
-    console.log("Signing secret length:", signingSecret.length);
-    console.log("Signing secret value:", signingSecret);
-    console.log("JWT (first 50 chars):", authorization.substring(0, 50) + "...");
-
-    const decoded = jwt.decode(authorization);
-    console.log("JWT decoded (no verify):", JSON.stringify(decoded, null, 2));
-
     const { accountId, userId, backToUrl, shortLivedToken } = jwt.verify(
       authorization,
       signingSecret
