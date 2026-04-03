@@ -35,7 +35,7 @@ cp backend/.env.example backend/.env
 | Variable | Required | Description | Where to find it |
 |----------|----------|-------------|-----------------|
 | `MONDAY_SIGNING_SECRET` | Yes | Verifies incoming webhooks are from monday.com | Developer Center > Your App > App Credentials > Signing Secret |
-| `MONDAY_API_ENDPOINT` | No | Override the monday.com API endpoint (e.g. `https://use1.api.monday.com/v2` for US East 1) | Only needed if default `https://api.monday.com/v2` doesn't work for your region |
+| `MONDAY_API_ENDPOINT` | Yes | The monday.com GraphQL API endpoint. **Staging:** `https://api.mondaystaging.com/v2` **Production:** `https://api.monday.com/v2` | Depends on your environment (see below) |
 | `PORT` | No | Server port (default: `8080`) | — |
 
 ### 3. Create the app in monday.com
