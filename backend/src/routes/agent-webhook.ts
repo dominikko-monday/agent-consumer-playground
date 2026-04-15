@@ -37,7 +37,44 @@ agentWebhookRouter.post("/", async (req: Request, res: Response) => {
         return res.status(400).json({ error: "Missing itemId" });
       }
 
-      console.log("Sending create_update via API SDK for item:", itemId);
+      // Step 1: Query the item to get its board ID
+      console.log("Querying board ID for item:", itemId);
+
+      const itemResult = await mondayApi.request<{ items: { board: { id: string } }[] }>(
+        `query ($itemId: [ID!]!) { items(ids: $itemId) { board { id } } }`,
+        { itemId: [String(itemId)] }
+      );
+
+      console.log("Item query response:", JSON.stringify(itemResult, null, 2));
+
+      const boardId = itemResult?.items?.[0]?.board?.id;
+      if (!boardId) {
+        console.error("Could not retrieve board ID for item:", itemId);
+        return res.status(400).json({ error: "Could not retrieve board ID" });
+      }
+
+      console.log("Found board ID:", boardId);
+
+      // Step 2: Create a new empty item on that board
+      console.log("Creating new item on board:", boardId);
+
+      const createItemResult = await mondayApi.request<{ create_item: { id: string; name: string } }>(
+        `mutation ($boardId: ID!, $itemName: String!) { create_item(board_id: $boardId, item_name: $itemName) { id name } }`,
+        { boardId: String(boardId), itemName: "New item" }
+      );
+
+      console.log("Create item response:", JSON.stringify(createItemResult, null, 2));
+
+      const createdItem = createItemResult?.create_item;
+      if (!createdItem) {
+        console.error("Failed to create item on board:", boardId);
+        return res.status(500).json({ error: "Failed to create item" });
+      }
+
+      console.log("Created item:", createdItem.id, createdItem.name);
+
+      // Step 3: Post an update on the item reporting what was created
+      console.log("Posting update on item:", itemId);
 
       const result = await mondayApi.request<{ create_update: { id: string } }>(
         `mutation ($itemId: ID!, $body: String!) {
@@ -47,7 +84,7 @@ agentWebhookRouter.post("/", async (req: Request, res: Response) => {
         }`,
         {
           itemId: String(itemId),
-          body: "👋 Hi! I've been assigned to this item. How can I help?",
+          body: `Done! I created a new item: "${createdItem.name}" (ID: ${createdItem.id})`,
         }
       );
 
